@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Store Information</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 20px;
+      }
+
+      form {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      input[type="text"] {
+        width: calc(100% - 20px);
+        padding: 8px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      h2 {
+        margin-top: 40px;
+      }
+
+      ol {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      li {
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="studentform">
+      <h1>Student Detail</h1>
+      <label for="studentname">Student name:</label>
+      <input type="text" id="studentname" placeholder="Enter student name" required /><br />
+
+      <label for="coursename">Course name:</label>
+      <input type="text" id="coursename" placeholder="Enter course name" required /><br />
+
+      <label for="studentuid">Student UID:</label>
+      <input type="text" id="studentuid" placeholder="Enter student UID" required /><br />
+
+      <label for="studentmarks">Student Marks:</label>
+      <input type="text" id="studentmarks" placeholder="Enter student marks (0-100)" required pattern="\d+" title="Please enter a valid number between 0 and 100" /><br />
+      <button type="submit" class="btn btn-success">Add Student</button>
+    </form>
+    <h2>Student Details</h2>
+    <ol id="allstudents"></ol>
+    <script>
+      const studentform = document.getElementById('studentform');
+      const allstudents = document.getElementById('allstudents');
+      let students = [];
+
+      studentform.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const studentname = document.getElementById('studentname').value;
+        const coursename = document.getElementById('coursename').value;
+        const studentuid = document.getElementById('studentuid').value;
+        const studentmarks = document.getElementById('studentmarks').value;
+
+        if (studentmarks < 0 || studentmarks > 100) {
+          alert("Please enter marks between 0 and 100.");
+          return;
+        }
+
+        let student = {
+            studentname,
+            coursename,
+            studentuid,
+            studentmarks
+        };
+        students.push(student);
+        displayStudents();
+        studentform.reset();
+      });
+
+      const displayStudents = () => {
+        allstudents.innerHTML = '';
+        students.forEach((student, index) => {
+          let listItem = document.createElement('li');
+          listItem.textContent = `Name: ${student.studentname}, Course: ${student.coursename}, UID: ${student.studentuid}, Marks: ${student.studentmarks}`;
+          allstudents.appendChild(listItem);
+        });
+      };
+    </script>
+  </body>
+</html>
