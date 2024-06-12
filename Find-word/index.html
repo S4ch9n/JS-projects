@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find in JS</title>
+    <style>
+
+    </style>
+</head>
+<body>
+    <div class="find-form">
+        <h1>Find in JS</h1>
+        <div class="find-form">
+            <h2>Find word</h2>
+            <p id="sample-text">This is a sample text where we will find the word in a case insensitive and global manner. The text will be used for data.</p>
+            <form id="findForm">
+                <div class="form-group">
+                    <label for="searchWord">Search Word :</label>
+                    <input type="text" id="searchWord" name="searchWord">
+                </div>
+                <div id="result"></div>
+                <div class="form-group">
+                    <button type="submit">Search</button>
+                    <button type="button" id="clearButton">Clear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('searchWord');
+        const resultDiv = document.getElementById('result');
+        const sampleText = document.getElementById('sample-text').textContent;
+        const findForm = document.getElementById('findForm');
+        const clearButton = document.getElementById('clearButton');
+
+        searchInput.addEventListener('input', findWord);
+        findForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+            findWord();
+        });
+        clearButton.addEventListener('click', clearFields);
+
+        function findWord() {
+            const searchWord = searchInput.value.trim();
+            const regex = new RegExp(searchWord, 'ig');
+
+            const matches = sampleText.match(regex);
+            if (matches) {
+                let highlightedText = sampleText.replace(regex, match => `<span class='highlight'>${match}</span>`);
+                resultDiv.innerHTML = highlightedText;
+            } else {
+                resultDiv.innerHTML = '<p class="no-match">No match found</p>';
+            }
+        }
+
+        function clearFields() {
+            searchInput.value = '';
+            resultDiv.innerHTML = '';
+        }
+    </script>
+</body>
+</html>

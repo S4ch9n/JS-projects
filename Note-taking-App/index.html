@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Note Taking App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 10px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: #007BFF;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0,123,255,0.5);
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .notes {
+            margin-top: 20px;
+        }
+        .note {
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .note h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .note .category {
+            font-style: italic;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        .note .actions {
+            text-align: right;
+        }
+        .note .actions button {
+            margin-left: 10px;
+            background-color: #ff4d4d;
+        }
+        .note .actions button:hover {
+            background-color: #cc0000;
+        }
+        .note .actions button.edit {
+            background-color: #ffc107;
+        }
+        .note .actions button.edit:hover {
+            background-color: #e0a800;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Note Taking App</h1>
+    <div class="form-group">
+        <label for="category">Category:</label>
+        <select id="category">
+            <option value="Health">Health</option>
+            <option value="Personal">Personal</option>
+            <option value="Work">Work</option>
+            <option value="Add New Category">Add New Category</option>
+        </select>
+        <input type="text" id="new-category" placeholder="Enter new category" style="display: none; margin-top: 10px;">
+    </div>
+    <div class="form-group">
+        <label for="title">Title:</label>
+        <input type="text" id="title" placeholder="Note title">
+    </div>
+    <div class="form-group">
+        <label for="content">Content:</label>
+        <textarea id="content" rows="5" placeholder="Note content"></textarea>
+    </div>
+    <button onclick="addNote()">Add Note</button>
+    
+    <div class="notes" id="notes"></div>
+</div>
+
+<script>
+    const categorySelect = document.getElementById('category');
+    const newCategoryInput = document.getElementById('new-category');
+    const notesContainer = document.getElementById('notes');
+
+    categorySelect.addEventListener('change', function() {
+        if (this.value === 'Add New Category') {
+            newCategoryInput.style.display = 'block';
+        } else {
+            newCategoryInput.style.display = 'none';
+        }
+    });
+
+    function addNote() {
+        const category = newCategoryInput.style.display === 'block' && newCategoryInput.value ? newCategoryInput.value : categorySelect.value;
+        const title = document.getElementById('title').value;
+        const content = document.getElementById('content').value;
+
+        if (!category || !title || !content) {
+            alert('Please fill out all fields');
+            return;
+        }
+
+        const note = {
+            category,
+            title,
+            content
+        };
+
+        displayNote(note);
+        saveNoteToLocal(note);
+        resetForm();
+    }
+
+    function displayNote(note) {
+        const noteElement = document.createElement('div');
+        noteElement.className = 'note';
+        noteElement.innerHTML = `
+            <h2>${note.title}</h2>
+            <p class="category">${note.category}</p>
+            <p>${note.content}</p>
+            <div class="actions">
+                <button class="edit" onclick="editNote(this)">Edit</button>
+                <button onclick="deleteNote(this)">Delete</button>
+            </div>
+        `;
+        notesContainer.appendChild(noteElement);
+    }
+
+    function saveNoteToLocal(note) {
+        let notes = JSON.parse(localStorage.getItem('notes')) || [];
+        notes.push(note);
+        localStorage.setItem('notes', JSON.stringify(notes));
+    }
+
+    function resetForm() {
+        document.getElementById('title').value = '';
+        document.getElementById('content').value = '';
+        categorySelect.value = 'Health';
+        newCategoryInput.value = '';
+        newCategoryInput.style.display = 'none';
+    }
+
+    function loadNotes() {
+        const notes = JSON.parse(localStorage.getItem('notes')) || [];
+        notes.forEach(note => displayNote(note));
+    }
+
+    function editNote(button) {
+        const noteElement = button.closest('.note');
+        const title = noteElement.querySelector('h2').textContent;
+        const category = noteElement.querySelector('.category').textContent;
+        const content = noteElement.querySelector('p:not(.category)').textContent;
+
+        document.getElementById('title').value = title;
+        document.getElementById('content').value = content;
+        categorySelect.value = category;
+        if (Array.from(categorySelect.options).find(option => option.value === category)) {
+            categorySelect.value = category;
+            newCategoryInput.style.display = 'none';
+        } else {
+            categorySelect.value = 'Add New Category';
+            newCategoryInput.value = category;
+            newCategoryInput.style.display = 'block';
+        }
+
+        deleteNoteByElement(noteElement);
+    }
+
+    function deleteNoteByElement(noteElement) {
+        const title = noteElement.querySelector('h2').textContent;
+        let notes = JSON.parse(localStorage.getItem('notes')) || [];
+        notes = notes.filter(note => note.title !== title);
+        localStorage.setItem('notes', JSON.stringify(notes));
+        noteElement.remove();
+    }
+
+    function deleteNote(button) {
+        const noteElement = button.closest('.note');
+        deleteNoteByElement(noteElement);
+    }
+
+    window.onload = loadNotes;
+</script>
+
+</body>
+</html>
