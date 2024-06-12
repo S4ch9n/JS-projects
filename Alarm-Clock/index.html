@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alarm Clock</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            text-align: center;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #alarmform {
+            margin: 20px 0;
+        }
+
+        input[type="time"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        label {
+            margin-left: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Simple Alarm Clock</h1>
+        <div id="time">
+            <div id="alarmform">
+                <input type="time" id="alarmtime">
+                <label for="togglealarm">
+                    <input type="checkbox" id="togglealarm"> Enable Alarm
+                </label>
+                <audio src="alarm-tone.mp3" id="alarmsound"></audio>
+            </div>
+        </div>
+        <button id="btn" onclick="checkAlarm()">Check</button>
+        <button id="offBtn" onclick="turnOffAlarm()" style="display:none;">Turn Off Alarm</button>
+    </div>
+
+    <script>
+        let intervalID;
+
+        document.getElementById('togglealarm').addEventListener('change', function () {
+            if (this.checked) {
+                setAlarm();
+            } else {
+                clearAlarm();
+            }
+        });
+
+        function setAlarm() {
+            let alarmTime = document.getElementById('alarmtime').value;
+            let alarmHour = parseInt(alarmTime.substring(0, 2), 10);
+            let alarmMinute = parseInt(alarmTime.substring(3, 5), 10);
+            console.log('Alarm set for:', alarmHour, alarmMinute);
+
+            intervalID = setInterval(function () {
+                let now = new Date();
+                let currentHour = now.getHours();
+                let currentMinute = now.getMinutes();
+                console.log('Current time:', currentHour, currentMinute);
+
+                if (currentHour === alarmHour && currentMinute === alarmMinute) {
+                    document.getElementById('alarmsound').play();
+                    console.log('Alarm ringing!');
+                    document.getElementById('offBtn').style.display = 'inline';
+                }
+            }, 1000);
+        }
+
+        function clearAlarm() {
+            clearInterval(intervalID);
+            console.log('Alarm cleared.');
+            document.getElementById('alarmsound').pause();
+            document.getElementById('alarmsound').currentTime = 0;
+            document.getElementById('offBtn').style.display = 'none';
+        }
+
+        function turnOffAlarm() {
+            clearAlarm();
+            document.getElementById('togglealarm').checked = false;
+        }
+
+        function checkAlarm() {
+            console.log('Checking alarm status...');
+            if (document.getElementById('togglealarm').checked) {
+                console.log('Alarm is enabled.');
+            } else {
+                console.log('Alarm is disabled.');
+            }
+        }
+    </script>
+</body>
+</html>
