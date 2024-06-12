@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Zone</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+             background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+        }
+         h1 {
+            color: #333;
+            margin: 20px 0;
+        }
+         .container-first, .container-second{
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 800px;
+            margin: 10px 0;
+        }
+        .timebox {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px;
+            flex: 1;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+        
+        .timebox:hover {
+            transform: translateY(-10px);
+        }
+        .timebox h1 {
+            margin-top: 0;
+            font-size: 1.5em;
+            color: #007BFF;
+        }
+        .timebox p {
+            font-size: 1.2em;
+            color: #555;
+        } 
+    </style>
+</head>
+<body>
+    <h1>Welcome to Time Zone</h1>
+    <div class="container-first">
+        <div class="timebox">
+            <h1>India</h1>
+            <p id="india"></p>
+        </div>
+        <div class="timebox">
+            <h1>US</h1>
+            <p id="newyork"></p>
+        </div>
+    </div>
+    <div class="container-second">
+        <div class="timebox">
+            <h1>Paris</h1>
+            <p id="paris"></p>
+        </div>
+        <div class="timebox">
+            <h1>London</h1>
+            <p id="london"></p>
+        </div>
+    </div>
+    <script>
+        var updateTime = function() {
+            document.getElementById('india').innerHTML = new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
+            
+            document.getElementById('newyork').innerHTML = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
+
+            document.getElementById('paris').innerHTML = new Date().toLocaleString('en-US', { timeZone: 'Europe/Paris' });
+            
+            document.getElementById('london').innerHTML = new Date().toLocaleString('en-US', { timeZone: 'Europe/London' });
+        }
+
+        updateTime();
+
+        setInterval(updateTime, 1000);
+    </script>
+</body>
+</html>
