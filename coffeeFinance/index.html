@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .card-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .car {
+            cursor: pointer;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 150px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .car:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .gold-card {
+            background-color: #ffd700;
+        }
+        .silver-card {
+            background-color: #c0c0c0;
+        }
+        .regular-card {
+            background-color: #e0e0e0;
+        }
+        .selected {
+            border: 2px solid #000;
+        }
+        .options-container {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            color: #333;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #totalPrice {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Coffee Management System</h1>
+    <div class="card-container">
+        <!--gold-->
+        <div class="car gold-card" onclick="selectCustomerType('gold')">
+            <h2>Gold Member</h2>
+            <p>Special discount for Gold member</p>
+        </div>
+
+        <!--silver-->
+        <div class="car silver-card" onclick="selectCustomerType('silver')">
+            <h2>Silver Member</h2>
+            <p>Discount for Silver member</p>
+        </div>
+
+        <!--regular-->
+        <div class="car regular-card" onclick="selectCustomerType('regular')">
+            <h2>Regular Member</h2>
+            <p>Discount for regular member</p>
+        </div>
+    </div>
+    <input type="hidden" id="customerType">
+
+    <!--coffee type-->
+    <div id="options" class="options-container">
+        <label for="coffeeType">Select Coffee Type</label>
+        <select id="coffeeType" class="select-option">
+            <option value="latte">Latte</option>
+            <option value="espresso">Espresso</option>
+            <option value="mocha">Mocha</option>
+        </select>
+        <!--coffee size-->
+        <label for="coffeeSize">Select Coffee Size</label>
+        <select id="coffeeSize" class="select-option">
+            <option value="small">Small</option>
+            <option value="medium">Medium</option>
+            <option value="large">Large</option>
+        </select>
+
+        <!--quantity-->
+        <label for="quantity">Quantity</label>
+        <input type="number" id="quantity" min="1" value="1" class="input-number">
+        <button onclick="calculateTotal()">Calculate Total</button>
+    </div>
+    <div id="totalPrice"></div>
+
+    <script>
+        function selectCustomerType(type) {
+            document.getElementById('customerType').value = type;
+            document.getElementById('options').style.display = 'block';
+
+            // Remove 'selected' class from all cards
+            const cards = document.getElementsByClassName('car');
+            for (let card of cards) {
+                card.classList.remove('selected');
+            }
+
+            // Add 'selected' class to the clicked card
+            const selectedCard = document.querySelector(`.${type}-card`);
+            selectedCard.classList.add('selected');
+        }
+
+        function calculateTotal() {
+            const basePrices = {
+                latte: 5,
+                espresso: 3,
+                mocha: 4
+            };
+            const sizeMultiplier = {
+                small: 1,
+                medium: 1.5,
+                large: 2
+            };
+            const discounts = {
+                gold: 0.2,
+                silver: 0.1,
+                regular: 0
+            };
+
+            const coffeeType = document.getElementById('coffeeType').value;
+            const coffeeSize = document.getElementById('coffeeSize').value;
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const customerType = document.getElementById('customerType').value;
+
+            const basePrice = basePrices[coffeeType];
+            const multiplier = sizeMultiplier[coffeeSize];
+            const discount = discounts[customerType];
+
+            if (!customerType) {
+                alert('Please select a customer type');
+                return;
+            }
+
+            const totalPrice = basePrice * multiplier * quantity;
+            const discountAmount = totalPrice * discount;
+            const finalPrice = totalPrice - discountAmount;
+
+            document.getElementById('totalPrice').innerHTML = `
+                <p>Total Price: $${totalPrice.toFixed(2)}</p>
+                <p>Discount: $${discountAmount.toFixed(2)}</p>
+                <p>Final Price: $${finalPrice.toFixed(2)}</p>
+            `;
+        }
+    </script>
+</body>
+</html>
