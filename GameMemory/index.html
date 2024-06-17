@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        #game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .card {
+            width: 100px;
+            height: 100px;
+            background-color: #1c87c9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 48px;
+            color: white;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: transform 0.2s;
+        }
+
+        .card.flipped {
+            background-color: #ffffff;
+            color: #1c87c9;
+            transform: rotateY(180deg);
+        }
+
+        .card.matched {
+            background-color: #4CAF50;
+            color: white;
+            cursor: default;
+        }
+
+        #controls {
+            display: flex;
+            justify-content: space-between;
+            width: 420px;
+        }
+
+        #start-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #score, #timer {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <div id="score">Score: 0</div>
+        <button id="start-button">Start Game</button>
+        <div id="timer">Time: 60s</div>
+    </div>
+    <div id="game-board"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cardArray = [
+                { name: '🍎', img: '🍎' },
+                { name: '🍎', img: '🍎' },
+                { name: '🍌', img: '🍌' },
+                { name: '🍌', img: '🍌' },
+                { name: '🍇', img: '🍇' },
+                { name: '🍇', img: '🍇' },
+                { name: '🍉', img: '🍉' },
+                { name: '🍉', img: '🍉' },
+                { name: '🍓', img: '🍓' },
+                { name: '🍓', img: '🍓' },
+                { name: '🍍', img: '🍍' },
+                { name: '🍍', img: '🍍' },
+                { name: '🍒', img: '🍒' },
+                { name: '🍒', img: '🍒' },
+                { name: '🍑', img: '🍑' },
+                { name: '🍑', img: '🍑' }
+            ];
+
+            const gameBoard = document.getElementById('game-board');
+            const startButton = document.getElementById('start-button');
+            const scoreDisplay = document.getElementById('score');
+            const timerDisplay = document.getElementById('timer');
+            let cardsChosen = [];
+            let cardsChosenId = [];
+            let cardsWon = [];
+            let score = 0;
+            let timer;
+            let timeRemaining = 60;
+
+            function createBoard() {
+                gameBoard.innerHTML = '';
+                cardArray.sort(() => 0.5 - Math.random());
+                cardArray.forEach((item, index) => {
+                    const card = document.createElement('div');
+                    card.setAttribute('data-id', index);
+                    card.setAttribute('class', 'card');
+                    card.addEventListener('click', flipCard);
+                    gameBoard.appendChild(card);
+                });
+                score = 0;
+                timeRemaining = 60;
+                updateScore();
+                updateTimer();
+            }
+
+            function flipCard() {
+                if (timeRemaining === 0 || cardsChosen.length === 2) return;
+                let cardId = this.getAttribute('data-id');
+                if (cardsChosenId.includes(cardId)) return;
+                cardsChosen.push(cardArray[cardId].name);
+                cardsChosenId.push(cardId);
+                this.classList.add('flipped');
+                this.innerHTML = cardArray[cardId].img;
+                if (cardsChosen.length === 2) {
+                    setTimeout(checkForMatch, 500);
+                }
+            }
+
+            function checkForMatch() {
+                const cards = document.querySelectorAll('.card');
+                const [optionOneId, optionTwoId] = cardsChosenId;
+                if (cardsChosen[0] === cardsChosen[1] && optionOneId !== optionTwoId) {
+                    cards[optionOneId].classList.add('matched');
+                    cards[optionTwoId].classList.add('matched');
+                    cardsWon.push(cardsChosen);
+                    score++;
+                    updateScore();
+                } else {
+                    cards[optionOneId].classList.remove('flipped');
+                    cards[optionTwoId].classList.remove('flipped');
+                    cards[optionOneId].innerHTML = '';
+                    cards[optionTwoId].innerHTML = '';
+                }
+                cardsChosen = [];
+                cardsChosenId = [];
+                if (cardsWon.length === cardArray.length / 2) {
+                    clearInterval(timer);
+                    alert('Congratulations! You found them all!');
+                }
+            }
+
+            function updateScore() {
+                scoreDisplay.textContent = `Score: ${score}`;
+            }
+
+            function updateTimer() {
+                timerDisplay.textContent = `Time: ${timeRemaining}s`;
+            }
+
+            function startGame() {
+                createBoard();
+                clearInterval(timer);
+                timer = setInterval(() => {
+                    timeRemaining--;
+                    updateTimer();
+                    if (timeRemaining === 0) {
+                        clearInterval(timer);
+                        alert('Time is up! Game over.');
+                    }
+                }, 1000);
+            }
+
+            startButton.addEventListener('click', startGame);
+        });
+    </script>
+</body>
+</html>
